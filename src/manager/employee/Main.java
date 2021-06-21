@@ -1,6 +1,12 @@
 package manager.employee;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Scanner;
 
 public class Main {
@@ -221,12 +227,56 @@ public class Main {
 	}
 	
 	private static void readFile() {
-		// TODO Auto-generated method stub
+		System.out.print("Informe name of file you want to open: ");
+		String nameOfFile = keyboard.nextLine();
 		
+		try {
+			FileReader fileReader = new FileReader(nameOfFile);
+			BufferedReader bufferReader = new BufferedReader(fileReader);
+			int i = 0;
+			
+			String line;
+			while((line = bufferReader.readLine()) != null) {
+				int position = knowPositionFree();
+				String [] employeeString = line.split(",");
+				
+				Employee employee = new Employee(Integer.valueOf(employeeString[0]), employeeString[1], employeeString[2], employeeString[3], LocalDate.parse(employeeString[4]));
+				
+				employees[position] = employee;
+				
+				i++;
+				size++;
+			}		
+			
+			if(i != 0) System.out.println("Data uploaded.");
+			else System.out.println("File not found");
+			
+			bufferReader.close();
+		} catch (Exception e) {
+			System.out.println("ERROR: " + e.getMessage());
+		}				
+		menu();
 	}
 
 	private static void record() {
-		// TODO Auto-generated method stub
-		
+		if(size != 0) {
+			try {
+				String nameOfFile =  String.format("employees%s.txt", LocalDateTime.now());
+				FileWriter fileWriter = new FileWriter(nameOfFile);
+				PrintWriter printWriter = new PrintWriter(fileWriter);
+				
+				for(int i = 0; i < size; i++) {
+					printWriter.print(employees[i].toString() +"\n");
+				}
+				printWriter.close();
+				System.out.println("Save with successfully... Name of file: " + nameOfFile);
+			} catch (Exception e) {
+				System.out.println("ERROR: " + e.getMessage());
+			}
+			
+		} else {
+			System.out.println("EMPTY - NO EMPLOYEE IN DATABASE");
+		}
+		menu();
 	}
 }
